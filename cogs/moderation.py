@@ -31,6 +31,22 @@ class Moderation(commands.Cog):
         await member.send(embed=embed)
         await member.ban(reason=reason)
 
+    @commands.command()
+    @commands.has_permissions(ban_members=True)
+    async def unban(self, ctx, *, member):
+        banned_user = await ctx.guild.bans()
+        member_name, member_discriminator = member.split("#")
+        for ban_entry in banned_user:
+            user = ban_entry.user
+
+            if (user.name, user.discriminator) == (member_name, member_discriminator):
+                await ctx.guild.unban(user)
+                embed = discord.Embed(title=f"Unbanned {member}!",
+                                      description=f"{user.mention} is now unbanned! :white_check_mark:",
+                                      color=discord.Color.green())
+                await ctx.send(embed=embed)
+                return
+
 
 def setup(client):
     client.add_cog(Moderation(client))
